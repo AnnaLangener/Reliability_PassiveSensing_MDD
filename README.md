@@ -1,6 +1,6 @@
 # Read Me
 
-This repository contains the supplementary material and all code used for **XXX**.
+This repository contains the supplementary material and all code used for the manuscript **Reliability of Passive Sensing Data: A Multi-Method Evaluation in Depression**.
 
 ## Repository Structure
 

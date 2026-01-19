@@ -1,11 +1,10 @@
 ---
-title: "Supplementary Material"
+title: "Supplementary Material - Reliability of Passive Sensing Data: A Multi-Method Evaluation in Depression"
 output: 
   html_document:
     toc: true
     toc_depth: 2
     toc_float: true
-date: "2026-01-19"
 ---
 
 ```{r setup, include=FALSE}
@@ -108,7 +107,7 @@ for (i in 1:5) {
   if (length(subplots) > 0) {
     combined <- wrap_plots(subplots, ncol = 3,guides = "collect", axes = "collect") +
     plot_annotation(title = names(domains)[i]) &
-    theme(plot.title = element_text(face = "bold", size = 16))
+    theme(plot.title = element_text(face = "bold", size = 18))
     plots_by_domain[[names(domains)[i]]] <- combined
   }
 }
