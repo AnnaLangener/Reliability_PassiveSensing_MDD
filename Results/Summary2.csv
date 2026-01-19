@@ -1,0 +1,41 @@
+"timescale","suffix","scale_name","variable","optimizer","REML","converged","singular","error"
+"Daily","main","Standard","AffectiveDysregulation","nloptwrap",TRUE,TRUE,TRUE,NA
+"Daily","main","Standard","BehavioralInactivation","nloptwrap",TRUE,TRUE,TRUE,NA
+"Daily","main","Standard","Social","nloptwrap",TRUE,TRUE,TRUE,NA
+"Daily","main","Standard","AffectiveDysregulation","nloptwrap",TRUE,TRUE,TRUE,NA
+"Daily","main","Standard","BehavioralInactivation","nloptwrap",TRUE,TRUE,TRUE,NA
+"Daily","main","Standard","Social","nloptwrap",TRUE,TRUE,TRUE,NA
+"Daily","main","Log_Standard","AffectiveDysregulation","nloptwrap",FALSE,TRUE,TRUE,NA
+"Daily","main","Log_Standard","BehavioralInactivation","nloptwrap",TRUE,TRUE,TRUE,NA
+"Daily","imp","Standard","AffectiveDysregulation",NA,NA,FALSE,NA,"No optimizer / REML combination converged"
+"Daily","main","Log_Standard","Social","nloptwrap",TRUE,TRUE,TRUE,NA
+"Daily","imp","Standard","BehavioralInactivation","nloptwrap",TRUE,TRUE,TRUE,NA
+"Daily","imp","Standard","Social","nloptwrap",TRUE,TRUE,TRUE,NA
+"Daily","main","Log_Standard","AffectiveDysregulation","nloptwrap",FALSE,TRUE,TRUE,NA
+"Daily","main","Log_MinMax","AffectiveDysregulation",NA,NA,FALSE,NA,"No optimizer / REML combination converged"
+"Daily","main","Log_Standard","BehavioralInactivation","nloptwrap",TRUE,TRUE,TRUE,NA
+"Daily","main","Log_Standard","Social","nloptwrap",TRUE,TRUE,TRUE,NA
+"Daily","main","Log_MinMax","BehavioralInactivation","nloptwrap",TRUE,TRUE,TRUE,NA
+"Daily","main","MinMax","AffectiveDysregulation",NA,NA,FALSE,NA,"No optimizer / REML combination converged"
+"Daily","imp","Standard","AffectiveDysregulation",NA,NA,FALSE,NA,"No optimizer / REML combination converged"
+"Daily","imp","Standard","BehavioralInactivation","nloptwrap",TRUE,TRUE,TRUE,NA
+"Daily","imp","Standard","Social","nloptwrap",TRUE,TRUE,TRUE,NA
+"Daily","imp","Log_Standard","AffectiveDysregulation",NA,NA,FALSE,NA,"No optimizer / REML combination converged"
+"Daily","imp","Log_Standard","BehavioralInactivation","nloptwrap",TRUE,TRUE,TRUE,NA
+"Daily","imp","Log_Standard","Social","nloptwrap",TRUE,TRUE,TRUE,NA
+"Daily","main","Log_MinMax","AffectiveDysregulation",NA,NA,FALSE,NA,"No optimizer / REML combination converged"
+"Daily","main","Log_MinMax","BehavioralInactivation","nloptwrap",TRUE,TRUE,TRUE,NA
+"Daily","imp","MinMax","AffectiveDysregulation",NA,NA,FALSE,NA,"No optimizer / REML combination converged"
+"Daily","imp","Log_MinMax","AffectiveDysregulation",NA,NA,FALSE,NA,"No optimizer / REML combination converged"
+"Daily","main","MinMax","AffectiveDysregulation",NA,NA,FALSE,NA,"No optimizer / REML combination converged"
+"Daily","imp","Log_MinMax","BehavioralInactivation","nloptwrap",TRUE,TRUE,TRUE,NA
+"Daily","main","MinMax","BehavioralInactivation",NA,NA,FALSE,NA,"No optimizer / REML combination converged"
+"Daily","main","Log_MinMax","Social",NA,NA,FALSE,NA,"No optimizer / REML combination converged"
+"Daily","imp","MinMax","BehavioralInactivation",NA,NA,FALSE,NA,"No optimizer / REML combination converged"
+"Daily","main","MinMax","BehavioralInactivation",NA,NA,FALSE,NA,"No optimizer / REML combination converged"
+"Daily","main","Log_MinMax","Social",NA,NA,FALSE,NA,"No optimizer / REML combination converged"
+"Daily","main","MinMax","Social","Nelder_Mead",FALSE,TRUE,TRUE,NA
+"Daily","imp","Log_MinMax","Social",NA,NA,FALSE,NA,"No optimizer / REML combination converged"
+"Daily","imp","MinMax","Social","Nelder_Mead",FALSE,TRUE,TRUE,NA
+"Daily","main","MinMax","Social","Nelder_Mead",FALSE,TRUE,TRUE,NA
+"Daily","main","Standard","Sleep","nloptwrap",TRUE,TRUE,TRUE,NA

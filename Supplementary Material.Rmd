@@ -1,0 +1,288 @@
+---
+title: "Supplementary Material"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: true
+date: "2026-01-19"
+---
+
+```{r setup, include=FALSE}
+library(lme4)
+library(ggplot2)
+library(dplyr)
+library(tidyverse)
+library(misty)
+library(patchwork)
+library(reshape2)
+library(hrbrthemes)
+library(gridExtra)
+
+knitr::opts_chunk$set(dpi=300)
+
+source("Helper_Functions.R")   
+```
+
+# Correlation Analyses
+## Correlations between measures (as preregistered)
+
+The following plots show the correlation between each measure for each construct
+
+```{r Correlation1, include=FALSE}
+      
+
+#data <- read.csv("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Analysis/complete_feat_dataset.csv")[-1]
+####
+Sleep <- c('gm_sleep_duration', 'gm_sleep_duration_awake','gm_sleep_duration_deep', 'gm_sleep_duration_rem',"sleep_duration")
+Activity <- c('gm_dailies_step', 'step_count2',  'garmin_steps', 'act_still_ep_0', 'gm_dailies_active_kcal', 'gm_dailies_active_sec', 'gm_dailies_distance', 'gm_dailies_moderate_sec')
+AffectiveDysregulation <- c ('garmin_hrv_mean_ep_0', 'gm_dailies_activity_stress_duration','gm_dailies_average_stress', 'garmin_stress_mean_ep_0','gm_dailies_high_stress_duration', 'gm_dailies_low_stress_duration','gm_dailies_max_stress', 'gm_dailies_medium_stress_duration')
+BehavioralInactivation <- c('unlock_duration_ep_0', 'unlock_num_ep_0', 'home_ep_0', 'loc_visit_num_ep_0', 'loc_dist_ep_0')
+Social <- c('audio_convo_duration_ep_0', 'audio_convo_num_ep_0','call_in_duration_ep_0', 'call_in_num_ep_0', 'call_out_duration_ep_0', 'call_out_num_ep_0', 'sms_in_num_ep_0', 'sms_out_num_ep_0')
+
+
+# ---- Step 1: Load Data ----
+scaler = "Standard"
+data_daily <- read.csv(paste0("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Daily_Cleaned_Dataset_",scaler,"_Complete.csv"))
+data_weekly <- read.csv(paste0("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Weekly_Cleaned_Dataset_",scaler,"_Complete.csv"))
+data_monthly <- read.csv(paste0("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Monthly_Cleaned_Dataset_",scaler,"_Complete.csv"))
+
+# ---- Plotting ----
+melt_corr <- function(corr_matrix) melt(corr_matrix, na.rm = TRUE)
+
+plot_heatmap <- function(df, title) {
+  ggplot(df, aes(Var1, Var2, fill = value)) +
+    geom_tile(color = "white") +
+    scale_fill_gradient2(
+      low = "#d95f02",
+      mid = "white",
+      high = "#1b9e77",
+      midpoint = 0,
+      limits = c(-1, 1)
+    ) +
+    geom_text(aes(label = round(value, 2)), size = 4) +
+    theme_ipsum() +
+    labs(title = title, x = "", y = "") +
+    theme(
+      axis.text.x = element_text(angle = 45, hjust = 1, size = 14),
+      axis.text.y = element_text(size = 14),
+      plot.title = element_text(face = "bold", size = 14),
+      legend.position = "none"
+    )
+}
+
+# ---- Datasets and domains ----
+datasets <- list(
+  Daily = data_daily,
+  Weekly = data_weekly,
+  Monthly = data_monthly
+)
+
+domains <- list(
+  Sleep = Sleep,
+  Activity = Activity,
+  AffectiveDysregulation = AffectiveDysregulation,
+  BehavioralInactivation = BehavioralInactivation,
+  Social = Social
+)
+
+# ---- Compute correlations and store plots ----
+plots_by_domain <- list()
+
+for (i in 1:5) {
+  subplots <- list()
+  
+  for (time_scale in names(datasets)) {
+    data <- datasets[[time_scale]]
+    corr_matrix <- cor(data[, domains[[i]]], use = "complete.obs")
+    melt_df <- melt_corr(corr_matrix)
+    print(names(domains)[i])
+    print(time_scale)
+    print(paste(mean(melt_df$value), min(melt_df$value),max(melt_df$value[melt_df$value != 1]) ))
+    plot_title <- paste0(time_scale)
+    subplots[[time_scale]] <- plot_heatmap(melt_df, plot_title)
+
+  }
+  
+  # Combine subplots horizontally for this domain
+  if (length(subplots) > 0) {
+    combined <- wrap_plots(subplots, ncol = 3,guides = "collect", axes = "collect") +
+    plot_annotation(title = names(domains)[i]) &
+    theme(plot.title = element_text(face = "bold", size = 16))
+    plots_by_domain[[names(domains)[i]]] <- combined
+  }
+}
+```
+
+```{r Correlation2,  echo=FALSE,results='hide',fig.keep='all', fig.width=13, fig.height=7}
+print(plots_by_domain)
+
+```
+
+
+## Correlations between measures (improved version)
+
+We found some negative correlations between measurs. Since negative correlations indicate that those measures do not tap into the same construct we removed them as an additional analysis. Specifically, for Sleep we removed two items, namely awake duration and deep sleep duration. For Affective Dysregulation we removed daily activity stress duration and daily low stress duration and for behavioral inactivation we removed the counts of phone unlocked.
+```{r Correlation3, include=FALSE}
+      
+# Remove negative items
+Sleep <- c('gm_sleep_duration', 'gm_sleep_duration_rem',"sleep_duration") # 2 removed
+Activity <- c('gm_dailies_step', 'step_count2',  'garmin_steps', 'act_still_ep_0', 'gm_dailies_active_kcal', 'gm_dailies_active_sec', 'gm_dailies_distance', 'gm_dailies_moderate_sec')
+AffectiveDysregulation <- c ('garmin_hrv_mean_ep_0','gm_dailies_average_stress', 'garmin_stress_mean_ep_0','gm_dailies_high_stress_duration','gm_dailies_max_stress', 'gm_dailies_medium_stress_duration') # 2 removed
+BehavioralInactivation <- c('unlock_duration_ep_0', 'home_ep_0', 'loc_visit_num_ep_0', 'loc_dist_ep_0') #unlock numeric removed
+Social <- c('audio_convo_duration_ep_0', 'audio_convo_num_ep_0','call_in_duration_ep_0', 'call_in_num_ep_0', 'call_out_duration_ep_0', 'call_out_num_ep_0', 'sms_in_num_ep_0', 'sms_out_num_ep_0')
+
+
+# ---- Step 1: Load Data ----
+scaler = "Standard"
+data_daily <- read.csv(paste0("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Daily_Cleaned_Dataset_",scaler,"_Complete.csv"))
+data_weekly <- read.csv(paste0("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Weekly_Cleaned_Dataset_",scaler,"_Complete.csv"))
+data_monthly <- read.csv(paste0("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Monthly_Cleaned_Dataset_",scaler,"_Complete.csv"))
+
+# ---- Plotting ----
+melt_corr <- function(corr_matrix) melt(corr_matrix, na.rm = TRUE)
+
+plot_heatmap <- function(df, title) {
+  ggplot(df, aes(Var1, Var2, fill = value)) +
+    geom_tile(color = "white") +
+    scale_fill_gradient2(
+      low = "#d95f02",
+      mid = "white",
+      high = "#1b9e77",
+      midpoint = 0,
+      limits = c(-1, 1)
+    ) +
+    geom_text(aes(label = round(value, 2)), size = 4) +
+    theme_ipsum() +
+    labs(title = title, x = "", y = "") +
+    theme(
+      axis.text.x = element_text(angle = 45, hjust = 1, size = 14),
+      axis.text.y = element_text(size = 14),
+      plot.title = element_text(face = "bold", size = 14),
+      legend.position = "none"
+    )
+}
+
+# ---- Datasets and domains ----
+datasets <- list(
+  Daily = data_daily,
+  Weekly = data_weekly,
+  Monthly = data_monthly
+)
+
+domains <- list(
+  Sleep = Sleep,
+  AffectiveDysregulation = AffectiveDysregulation,
+  BehavioralInactivation = BehavioralInactivation
+)
+
+# ---- Compute correlations and store plots ----
+plots_by_domain <- list()
+
+for (i in 1:3) {
+  subplots <- list()
+  
+  for (time_scale in names(datasets)) {
+    data <- datasets[[time_scale]]
+    corr_matrix <- cor(data[, domains[[i]]], use = "complete.obs")
+    melt_df <- melt_corr(corr_matrix)
+    print(names(domains)[i])
+    print(time_scale)
+    print(paste(mean(melt_df$value), min(melt_df$value),max(melt_df$value[melt_df$value != 1]) ))
+    plot_title <- paste0(time_scale)
+    subplots[[time_scale]] <- plot_heatmap(melt_df, plot_title)
+
+  }
+  
+  # Combine subplots horizontally for this domain
+  if (length(subplots) > 0) {
+    combined <- wrap_plots(subplots, ncol = 3,guides = "collect", axes = "collect") +
+    plot_annotation(title = names(domains)[i]) &
+    theme(plot.title = element_text(face = "bold", size = 16))
+    plots_by_domain[[names(domains)[i]]] <- combined
+  }
+}
+```
+
+
+```{r Correlation4,  echo=FALSE,results='hide',fig.keep='all', fig.width=13, fig.height=7}
+print(plots_by_domain)
+```
+
+
+# Internal Consistency
+
+## Internal Consistency using different Scalers (including all measures as preregistered)
+
+### Standard Scaler, Log Transformed
+```{r Consistency1, echo=FALSE}
+
+
+scaler <- c("Log_Standard")
+suffix <- c("main")
+
+create_table(scaler, suffix)
+
+
+```
+
+### MinMax Scaler
+
+```{r Consistency2, echo=FALSE}
+scaler <- c("MinMax")
+suffix <- c("main")
+
+create_table(scaler, suffix)
+```
+
+### MinMax Scaler Log Transformed
+```{r Consistency3, echo=FALSE}
+scaler <- c("Log_MinMax")
+suffix <- c("main")
+
+create_table(scaler, suffix)
+```
+
+## Internal Consistency using different Scalers (improved version)
+### Standard Scaler
+```{r Consistency4, echo=FALSE}
+
+scaler <- c("Standard")
+suffix <- c("imp")
+
+create_table_imp(scaler, suffix)
+
+```
+
+### Standard Scaler, Log Transformed
+
+```{r Consistency5, echo=FALSE}
+
+scaler <- c("Log_Standard")
+suffix <- c("imp")
+
+create_table_imp(scaler, suffix)
+
+```
+
+### MinMax Scaler
+
+```{r Consistency6, echo=FALSE}
+
+scaler <- c("MinMax")
+suffix <- c("imp")
+
+create_table_imp(scaler, suffix)
+
+```
+
+### MinMax Scaler, Log Transformed
+
+```{r Consistency7, echo=FALSE}
+
+scaler <- c("Log_MinMax")
+suffix <- c("imp")
+
+create_table_imp(scaler, suffix)
+
+```
