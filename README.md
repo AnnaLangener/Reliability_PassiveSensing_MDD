@@ -15,7 +15,7 @@ Used to clean and scale the data.
 ### 2. Data Analysis  
 
 - `Data_Analysis_1_new.R` – Main script for running the primary data analyses  
-- `Helper_Functions/` – Contains custom functions used during the data analysis
+- `Helper_Functions.R` – Contains custom functions used during the data analysis
 
 ---
 
