@@ -2,7 +2,6 @@
 ##############################################
 ######## Reliability Project Try Out #########
 ##############################################
-setwd("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project/Code")
 
 library(lme4)
 library(ggplot2)
@@ -18,6 +17,7 @@ source("Helper_Functions.R")
 
 
 length(unique(data_daily$uid))
+
 # ---- Correlation Analyses ----
 scaler = "Standard"
 data_daily <- read.csv(paste0("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Daily_Cleaned_Dataset_",scaler,"_Complete.csv"))
@@ -105,7 +105,7 @@ for (i in 1:5) {
 
 # 1) Internal consistency
 # 2) Test - Retest
-# 3) Interrater (Ceyhun)
+# 3) Interrater
 
 #--------------------------------------
 ######## Internal consistency #########
@@ -136,7 +136,9 @@ for (i in 1:5) {
 #Warn-D: Between: 1, Within 0.61-0.74
 #Cranford: Between: 0.97-0.99, within: 0.62-0.88
 
-####
+
+#### Daily 
+
 library(future.apply)
 
 # Define the combinations of scaler and suffix
@@ -172,11 +174,11 @@ process_combo <- function(scaler, suffix) {
   }
   
   daily_vars <- list(
-    Sleep = Sleep
-   # Activity = Activity, 
-    #AffectiveDysregulation = AffectiveDysregulation, 
-    #BehavioralInactivation = BehavioralInactivation, 
-    #Social = Social
+   Sleep = Sleep,
+   Activity = Activity,
+   AffectiveDysregulation = AffectiveDysregulation,
+   BehavioralInactivation = BehavioralInactivation,
+   Social = Social
   )
   
   # Run your model
@@ -201,7 +203,7 @@ results <- future_mapply(
   SIMPLIFY = FALSE
 )
 
-# ---- Step 1: Load Data ----
+
 for(scaler in c("Standard", "Log_Standard", "MinMax", "Log_MinMax")){
   for(suffix in c("main", "imp")){
   data_daily <- read.csv(paste0("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Daily_Cleaned_Dataset_",scaler,"_Complete.csv"))
@@ -240,7 +242,7 @@ for(scaler in c("Standard", "Log_Standard", "MinMax", "Log_MinMax")){
   }
 }
 
-####
+#### Weekly
 for(scaler in c("Standard", "Log_Standard", "MinMax", "Log_MinMax")){
   for(suffix in c("main", "imp")){
     
@@ -279,7 +281,8 @@ for(scaler in c("Standard", "Log_Standard", "MinMax", "Log_MinMax")){
   }
 }
 
-###
+#### Monthly 
+
 for(scaler in c("Standard", "Log_Standard", "MinMax", "Log_MinMax")){
   for(suffix in c("main", "imp")){
     
@@ -322,29 +325,12 @@ for(scaler in c("Standard", "Log_Standard", "MinMax", "Log_MinMax")){
 
 
 
-
-####
-data <- read.csv(paste0("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Weekly_Cleaned_Dataset_",scaler,"_Complete.csv"))
-
-mlr = psych::mlr(data,
-                 grp   = "uid",
-                 Time  = "week_num",
-                 items = Social,
-                 lmer  = TRUE,
-                 lme   = FALSE,
-                 alpha = FALSE,
-                 aov   = FALSE)
-print(mlr)
-
-
 #------- 3) Generalizability Theory [Nezlek, 3x multilevel model, Leertrouwer and Sebas Code is the Same]----------   
 # within: "internal consistency of a set of responses collected each measurement occasion, e.g., each day within the context of a daily diary study)""
 
 scaler = "Standard"
 suffix = "imp"
 
-
-timescale = "Daily"
 data_daily <- read.csv(paste0("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Daily_Cleaned_Dataset_",scaler,"_Complete.csv"))
 data_weekly <- read.csv(paste0("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Weekly_Cleaned_Dataset_",scaler,"_Complete.csv"))
 data_monthly <- read.csv(paste0("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Monthly_Cleaned_Dataset_",scaler,"_Complete.csv"))
@@ -369,6 +355,8 @@ if(suffix == "imp"){
 }
 
 setwd("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Results")
+
+timescale = "Daily"
 Sleep_Nez_d <- GeneralizabilityTheory_Nezlek(data_daily,Sleep,"day","uid") #0.93, 0 # singular
 Activity_Nez_d <- GeneralizabilityTheory_Nezlek(data_daily,Activity,"day","uid") #0.96, 0 # singular
 AffectiveDysregulation_Nez_d <- GeneralizabilityTheory_Nezlek(data_daily,AffectiveDysregulation,"day","uid") # 0.97, 0 # singular
@@ -494,13 +482,12 @@ suffix <- c("main")
 
 create_table(scaler, suffix)
 
-create_table <- function(scaler, suffix){
-  setwd("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Results")
+setwd("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Results")
   
-  suffixes   <- c("_d", "_w", "_m")
-  prefixes <- c("Daily", "Weekly", "Monthly")
+suffixes   <- c("_d", "_w", "_m")
+prefixes <- c("Daily", "Weekly", "Monthly")
   
-  for (i in seq_along(prefixes)) {
+for (i in seq_along(prefixes)) {
     for (con in c("Sleep","Activity","AffectiveDysregulation","BehavioralInactivation","Social")) {
       assign(
         paste0(con, "_Gen", suffixes[i]),
@@ -510,178 +497,116 @@ create_table <- function(scaler, suffix){
     }
   }
   
-  timescales <- c("Daily", "Weekly", "Monthly")
-  suffixes   <- c("_d", "_w", "_m")
-  constructs <- c("Sleep","Activity","AffectiveDysregulation","BehavioralInactivation","Social")
-  
-  for (i in seq_along(timescales)) {
-    for (con in constructs) {
-      assign(
-        paste0(con, "_Nez", suffixes[i]),
-        readRDS(paste0(timescales[i], "_Nez_", con, "_", scaler, "_", suffix, ".rds")),
-        envir = .GlobalEnv
-      )
-    }
-  }
-  
-  timescales <- c("Daily", "Weekly", "Monthly")
-  suffixes   <- c("_day", "_week", "_month")
-  constructs <- c("Sleep","Activity","AffectiveDysregulation","BehavioralInactivation","Social")
-  
-  for (i in seq_along(timescales)) {
-    for (con in constructs) {
-      assign(
-        paste0(con, "_omega", suffixes[i]),
-        readRDS(paste0(timescales[i], "_multi_", con, "_", scaler, "_", suffix, ".rds")),
-        envir = .GlobalEnv
-      )
-    }
-  }
-  
-  
-  
-  safe_omega <- function(obj, idx, digits = 2) {
-    tryCatch({
-      val <- obj$result$omega$omega[idx]
-      if (is.na(val)) NA else round(val, digits)
-    }, error = function(e) NA)
-  }
-  
-  # ----- Overview -----
-  
-  # Create summary data.frame
-  reliability_summary <- data.frame(
-    "Construct" = rep(c("Sleep","Activity","AffectiveDysregulation","BehavioralInactivation","Social"), each = 2),
-    "Level" = rep(c("Between","Within"), times = 5),
-    "Cranford_Day" = c(
-      round(Sleep_Gen_d[4],2), round(Sleep_Gen_d[5],2),
-      round(Activity_Gen_d[4],2), round(Activity_Gen_d[5],2),
-      round(AffectiveDysregulation_Gen_d[4],2), round(AffectiveDysregulation_Gen_d[5],2),
-      round(BehavioralInactivation_Gen_d[4],2), round(BehavioralInactivation_Gen_d[5],2),
-      round(Social_Gen_d[4],2), round(Social_Gen_d[5],2)
-    ),
-    "Cranford_Week" = c(
-      round(Sleep_Gen_w[4],2), round(Sleep_Gen_w[5],2),
-      round(Activity_Gen_w[4],2), round(Activity_Gen_w[5],2),
-      round(AffectiveDysregulation_Gen_w[4],2), round(AffectiveDysregulation_Gen_w[5],2),
-      round(BehavioralInactivation_Gen_w[4],2), round(BehavioralInactivation_Gen_w[5],2),
-      round(Social_Gen_w[4],2), round(Social_Gen_w[5],2)
-    ),
-    "Cranford_Month" = c(
-      round(Sleep_Gen_m[4],2), round(Sleep_Gen_m[5],2),
-      round(Activity_Gen_m[4],2), round(Activity_Gen_m[5],2),
-      round(AffectiveDysregulation_Gen_m[4],2), round(AffectiveDysregulation_Gen_m[5],2),
-      round(BehavioralInactivation_Gen_m[4],2), round(BehavioralInactivation_Gen_m[5],2),
-      round(Social_Gen_m[4],2), round(Social_Gen_m[5],2)
-    ),
-    "Nezlek_Day" = c(
-      round(Sleep_Nez_d[1],2), round(Sleep_Nez_d[2],2),
-      round(Activity_Nez_d[1],2), round(Activity_Nez_d[2],2),
-      round(AffectiveDysregulation_Nez_d[1],2), round(AffectiveDysregulation_Nez_d[2],2),
-      round(BehavioralInactivation_Nez_d[1],2), round(BehavioralInactivation_Nez_d[2],2),
-      round(Social_Nez_d[1],2), round(Social_Nez_d[2],2)
-    ),
-    "Nezlek_Week" = c(
-      round(Sleep_Nez_w[1],2), round(Sleep_Nez_w[2],2),
-      round(Activity_Nez_w[1],2), round(Activity_Nez_w[2],2),
-      round(AffectiveDysregulation_Nez_w[1],2), round(AffectiveDysregulation_Nez_w[2],2),
-      round(BehavioralInactivation_Nez_w[1],2), round(BehavioralInactivation_Nez_w[2],2),
-      round(Social_Nez_w[1],2), round(Social_Nez_w[2],2)
-    ),
-    "Nezlek_Month" = c(
-      round(Sleep_Nez_m[1],2), round(Sleep_Nez_m[2],2),
-      round(Activity_Nez_m[1],2), round(Activity_Nez_m[2],2),
-      round(AffectiveDysregulation_Nez_m[1],2), round(AffectiveDysregulation_Nez_m[2],2),
-      round(BehavioralInactivation_Nez_m[1],2), round(BehavioralInactivation_Nez_m[2],2),
-      round(Social_Nez_m[1],2), round(Social_Nez_m[2],2)
-    ),
-    "Omega_Day" = c(
-      safe_omega(Sleep_omega_day, 2), safe_omega(Sleep_omega_day, 1),
-      safe_omega(Activity_omega_day, 2), safe_omega(Activity_omega_day, 1),
-      safe_omega(AffectiveDysregulation_omega_day, 2), safe_omega(AffectiveDysregulation_omega_day, 1),
-      safe_omega(BehavioralInactivation_omega_day, 2), safe_omega(BehavioralInactivation_omega_day, 1),
-      safe_omega(Social_omega_day, 2), safe_omega(Social_omega_day, 1)
-    ),
-    "Omega_Week" = c(
-      safe_omega(Sleep_omega_week, 2), safe_omega(Sleep_omega_week, 1),
-      safe_omega(Activity_omega_week, 2), safe_omega(Activity_omega_week, 1),
-      safe_omega(AffectiveDysregulation_omega_week, 2), safe_omega(AffectiveDysregulation_omega_week, 1),
-      safe_omega(BehavioralInactivation_omega_week, 2), safe_omega(BehavioralInactivation_omega_week, 1),
-      safe_omega(Social_omega_week, 2), safe_omega(Social_omega_week, 1)
-    ),
-    "Omega_Month" = c(
-      safe_omega(Sleep_omega_month, 2), safe_omega(Sleep_omega_month, 1),
-      safe_omega(Activity_omega_month, 2), safe_omega(Activity_omega_month, 1),
-      safe_omega(AffectiveDysregulation_omega_month, 2), safe_omega(AffectiveDysregulation_omega_month, 1),
-      safe_omega(BehavioralInactivation_omega_month, 2), safe_omega(BehavioralInactivation_omega_month, 1),
-      safe_omega(Social_omega_month, 2), safe_omega(Social_omega_month, 1)
-    )
-  )
-  
-  library(flextable)
-  
-  ft <- flextable(reliability_summary) %>% 
-    delete_part(part = "header") |>
-    delete_part(part = "footer") |>
-    merge_at(i = 1:2, j = 1, part = "body")  %>%
-    merge_at(i = 3:4, j = 1, part = "body")  %>%
-    merge_at(i = 5:6, j = 1, part = "body")  %>%
-    merge_at(i = 7:8, j = 1, part = "body")  %>%
-    merge_at(i = 9:10, j = 1, part = "body")  %>%
-    add_header_row(
-      values = c("", "", "Day", "Week", "Month", "Day", "Week", "Month", "Day", "Week", "Month"),
-      colwidths = rep(1, 11)
-    ) |>
-    add_header_row(
-      values = c("", "", "Cranford","Nezlek", "Omega"),
-      colwidths = c(1, 1,3, 3, 3)
-    ) |>
-    merge_h(part = "header") |>
-    # bold(part = "header") |>
-    align(align = "center", part = "header") 
-  
-  # Identify numeric columns for heatmap
-  num_cols <- 3:11
-  
-  # Heatmap palette
-  heat_palette <- colorRampPalette(c( "#d95f02", "moccasin", "#1b9e77"))
-  
-  
-  get_heatmap_colors <- function(x, midpoint = 0.5, na_col = "white") {
-    
-    pal <- heat_palette(100)
-    
-    # Handle NA
-    out <- rep(na_col, length(x))
-    
-    ok <- !is.na(x)
-    
-    # Rescale so that midpoint maps to 0.5
-    x_rescaled <- scales::rescale_mid(x[ok], mid = midpoint, to = c(0, 1))
-    
-    idx <- pmax(1, pmin(100, round(x_rescaled * 99) + 1))
-    
-    out[ok] <- pal[idx]
-    out
-  }
-  
-  
-  for (col in num_cols) {
-    ft <- bg(
-      ft,
-      j = col,
-      i = seq_len(nrow(reliability_summary)),
-      bg = get_heatmap_colors(reliability_summary[[col]], midpoint = 0.5)
+timescales <- c("Daily", "Weekly", "Monthly")
+suffixes   <- c("_d", "_w", "_m")
+constructs <- c("Sleep","Activity","AffectiveDysregulation","BehavioralInactivation","Social")
+
+for (i in seq_along(timescales)) {
+  for (con in constructs) {
+    assign(
+      paste0(con, "_Nez", suffixes[i]),
+      readRDS(paste0(timescales[i], "_Nez_", con, "_", scaler, "_", suffix, ".rds")),
+      envir = .GlobalEnv
     )
   }
-  
-  
-  ft <- autofit(ft)
-  return(ft)
+}
+
+timescales <- c("Daily", "Weekly", "Monthly")
+suffixes   <- c("_day", "_week", "_month")
+constructs <- c("Sleep","Activity","AffectiveDysregulation","BehavioralInactivation","Social")
+
+for (i in seq_along(timescales)) {
+  for (con in constructs) {
+    assign(
+      paste0(con, "_omega", suffixes[i]),
+      readRDS(paste0(timescales[i], "_multi_", con, "_", scaler, "_", suffix, ".rds")),
+      envir = .GlobalEnv
+    )
+  }
 }
 
 
-## Abstract
+
+safe_omega <- function(obj, idx, digits = 2) {
+  tryCatch({
+    val <- obj$result$omega$omega[idx]
+    if (is.na(val)) NA else round(val, digits)
+  }, error = function(e) NA)
+}
+
+# ----- Overview -----
+
+# Create summary data.frame
+reliability_summary <- data.frame(
+  "Construct" = rep(c("Sleep","Activity","AffectiveDysregulation","BehavioralInactivation","Social"), each = 2),
+  "Level" = rep(c("Between","Within"), times = 5),
+  "Cranford_Day" = c(
+    round(Sleep_Gen_d[4],2), round(Sleep_Gen_d[5],2),
+    round(Activity_Gen_d[4],2), round(Activity_Gen_d[5],2),
+    round(AffectiveDysregulation_Gen_d[4],2), round(AffectiveDysregulation_Gen_d[5],2),
+    round(BehavioralInactivation_Gen_d[4],2), round(BehavioralInactivation_Gen_d[5],2),
+    round(Social_Gen_d[4],2), round(Social_Gen_d[5],2)
+  ),
+  "Cranford_Week" = c(
+    round(Sleep_Gen_w[4],2), round(Sleep_Gen_w[5],2),
+    round(Activity_Gen_w[4],2), round(Activity_Gen_w[5],2),
+    round(AffectiveDysregulation_Gen_w[4],2), round(AffectiveDysregulation_Gen_w[5],2),
+    round(BehavioralInactivation_Gen_w[4],2), round(BehavioralInactivation_Gen_w[5],2),
+    round(Social_Gen_w[4],2), round(Social_Gen_w[5],2)
+  ),
+  "Cranford_Month" = c(
+    round(Sleep_Gen_m[4],2), round(Sleep_Gen_m[5],2),
+    round(Activity_Gen_m[4],2), round(Activity_Gen_m[5],2),
+    round(AffectiveDysregulation_Gen_m[4],2), round(AffectiveDysregulation_Gen_m[5],2),
+    round(BehavioralInactivation_Gen_m[4],2), round(BehavioralInactivation_Gen_m[5],2),
+    round(Social_Gen_m[4],2), round(Social_Gen_m[5],2)
+  ),
+  "Nezlek_Day" = c(
+    round(Sleep_Nez_d[1],2), round(Sleep_Nez_d[2],2),
+    round(Activity_Nez_d[1],2), round(Activity_Nez_d[2],2),
+    round(AffectiveDysregulation_Nez_d[1],2), round(AffectiveDysregulation_Nez_d[2],2),
+    round(BehavioralInactivation_Nez_d[1],2), round(BehavioralInactivation_Nez_d[2],2),
+    round(Social_Nez_d[1],2), round(Social_Nez_d[2],2)
+  ),
+  "Nezlek_Week" = c(
+    round(Sleep_Nez_w[1],2), round(Sleep_Nez_w[2],2),
+    round(Activity_Nez_w[1],2), round(Activity_Nez_w[2],2),
+    round(AffectiveDysregulation_Nez_w[1],2), round(AffectiveDysregulation_Nez_w[2],2),
+    round(BehavioralInactivation_Nez_w[1],2), round(BehavioralInactivation_Nez_w[2],2),
+    round(Social_Nez_w[1],2), round(Social_Nez_w[2],2)
+  ),
+  "Nezlek_Month" = c(
+    round(Sleep_Nez_m[1],2), round(Sleep_Nez_m[2],2),
+    round(Activity_Nez_m[1],2), round(Activity_Nez_m[2],2),
+    round(AffectiveDysregulation_Nez_m[1],2), round(AffectiveDysregulation_Nez_m[2],2),
+    round(BehavioralInactivation_Nez_m[1],2), round(BehavioralInactivation_Nez_m[2],2),
+    round(Social_Nez_m[1],2), round(Social_Nez_m[2],2)
+  ),
+  "Omega_Day" = c(
+    safe_omega(Sleep_omega_day, 2), safe_omega(Sleep_omega_day, 1),
+    safe_omega(Activity_omega_day, 2), safe_omega(Activity_omega_day, 1),
+    safe_omega(AffectiveDysregulation_omega_day, 2), safe_omega(AffectiveDysregulation_omega_day, 1),
+    safe_omega(BehavioralInactivation_omega_day, 2), safe_omega(BehavioralInactivation_omega_day, 1),
+    safe_omega(Social_omega_day, 2), safe_omega(Social_omega_day, 1)
+  ),
+  "Omega_Week" = c(
+    safe_omega(Sleep_omega_week, 2), safe_omega(Sleep_omega_week, 1),
+    safe_omega(Activity_omega_week, 2), safe_omega(Activity_omega_week, 1),
+    safe_omega(AffectiveDysregulation_omega_week, 2), safe_omega(AffectiveDysregulation_omega_week, 1),
+    safe_omega(BehavioralInactivation_omega_week, 2), safe_omega(BehavioralInactivation_omega_week, 1),
+    safe_omega(Social_omega_week, 2), safe_omega(Social_omega_week, 1)
+  ),
+  "Omega_Month" = c(
+    safe_omega(Sleep_omega_month, 2), safe_omega(Sleep_omega_month, 1),
+    safe_omega(Activity_omega_month, 2), safe_omega(Activity_omega_month, 1),
+    safe_omega(AffectiveDysregulation_omega_month, 2), safe_omega(AffectiveDysregulation_omega_month, 1),
+    safe_omega(BehavioralInactivation_omega_month, 2), safe_omega(BehavioralInactivation_omega_month, 1),
+    safe_omega(Social_omega_month, 2), safe_omega(Social_omega_month, 1)
+  )
+)
+
+
+## Abstract & Summary values
 sapply(reliability_summary[reliability_summary$Level == "Between",], function(x) c(min = min(x, na.rm = TRUE),
                          max = max(x, na.rm = TRUE)))
 
@@ -716,6 +641,8 @@ max(
   unlist(reliability_summary[reliability_summary$Level == "Within" & !reliability_summary$Construct == "Activity", 3:11]),
   na.rm = TRUE
 )
+
+
 #--------------------------------------
 ######## Test - Retest #########
 #--------------------------------------
@@ -835,7 +762,8 @@ results_df <- bind_rows(
   extract_construct_df(social_month, "Social", "Monthly")
 )
 
-#Daily estimates generally showed lower stability, with many measures falling in the low-to-moderate ICC range (mean ICC = 0.37). In contrast, weekly and monthly aggregates tended to yield higher temporal stability across most domains (mean ICC = 0.64 and 0.78).
+# Summary of Results
+
 mean(results_df$V1[results_df$Timeframe == "Weekly"])
 
 
@@ -858,13 +786,11 @@ mean(results_df$V1[results_df$Variable == "gm_sleep_duration_awake"])
 library(dplyr)
 library(ggplot2)
 
-# Ensure you have the IsOverall column
 results_df <- results_df %>%
   mutate(
     IsOverall = ifelse(grepl("_Score$", Variable), "Overall Score", "Item")
   )
 
-# Reorder Variable so overall score is always first within each construct
 results_df <- results_df %>%
   group_by(Construct) %>%
   mutate(
@@ -915,70 +841,6 @@ plot = ggplot(results_df, aes(y = Variable, x = V1, color = Timeframe)) +
 
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 ggsave("testretestnew.jpg", plot = plot, width = 9, height = 10)
-
-
-######
-
-
-library(ggplot2)
-library(hrbrthemes)
-
-library(dplyr)
-
-# Base path
-base_path <- "/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data"
-
-# Read Monthly and Daily datasets
-monthly <- read.csv(file.path(base_path, "Monthly_Cleaned_Dataset_Log_MinMax_Complete.csv"))
-daily   <- read.csv(file.path(base_path, "Daily_Cleaned_Dataset_Log_MinMax_Complete.csv"))
-weekly   <- read.csv(file.path(base_path, "Weekly_Cleaned_Dataset_Log_MinMax_Complete.csv"))
-
-
-# Add a column to indicate data source
-monthly$time <- "Monthly"
-daily$time   <- "Daily"
-weekly$time   <- "Weekly"
-
-# Combine into one dataset
-all_data <- bind_rows(monthly, daily, weekly)
-
-# Subset 10 random users
-uids <- sample(unique(all_data$uid), 10)
-sub_data <- filter(all_data, uid %in% uids)
-
-# Plot
-ggplot(sub_data, aes(x = day_num, y = Sleep_Score, color = time, group = interaction(time, uid))) +
-  geom_line() +
-  facet_wrap(~ uid) +
-  theme_ipsum() +
-  labs(title = "Sleep Score Over Time",
-       x = "Day Number",
-       y = "Sleep Score",
-       color = "Data Source") 
-
-
-
-
-data[[time_var]] <- ave(seq_along(data[[uid_var]]),data[[uid_var]], FUN = seq_along)
-data[[time_var]] <- ave(seq_along(data[[uid_var]]),data[[uid_var]], FUN = seq_along)
-
-construct = BehavioralInactivation # Activity,AffectiveDysregulation, Social, Sleep
-
-long <-reshape(data[,c(uid_var, time_var, construct)], direction ="long", idvar=c(uid_var, time_var), timevar = "item",varying =list(construct), v.names   ="resp")
-uids <- sample(unique(long$uid), 10)
-sub_data <- filter(long, uid %in% uids)
-
-plot = ggplot(sub_data, aes(x = day, y = resp, color = as.factor(item))) +
-  geom_line() +
-  facet_wrap(~ uid) +
-  theme_ipsum() +
-  labs(title = "Score Over Time",
-       x = "Day Number",
-       y = "Score",
-       color = "Feature") 
-
-
-
 
 
 #------------------------------------------
@@ -1108,216 +970,3 @@ plot_stress <- arrangeGrob(p_stress, table_stress, ncol = 1, heights = c(3,1))
 plot = grid.arrange(plot_steps, plot_stress, ncol = 2)
 
 ggsave("interrater.jpg", plot = plot, width = 11, height = 5)
-
-
-################
-mlr_pa <- psych::mlr(data, grp = "uid", Time = "day", items = c('gm_dailies_step', 'step_count2'), 
-                     lmer = TRUE, lme = FALSE, alpha = FALSE, aov = FALSE)
-
-mlr_pa$RkRn # Check if this is Nezlek 2012 method: estimate of how reliable mean response is not of how consisently people respond across items!
-mlr_pa$Rcn
-mlr_pa$Rc
-
-
-
-
-
-
-
-
-
-### ===== Other Code ====
-# Activity & affective dysregulation: features seem to map into the same construct
-# Sleep, Behavioral Inactivation: features seem to map into different constructs
-# Social: mixed results
-
-library(lavaan)
-library(misty)
-
-# # Non-log transformed
-# df_daily <- read.csv('/Users/nenbarsalo/Downloads/4_Reliability Project_DataNoise/Daily_Cleaned_Dataset_MinMax_Complete_noise.csv')
-# df_weekly <- read.csv('/Users/nenbarsalo/Downloads/4_Reliability Project_DataNoise/Weekly_Cleaned_Dataset_MinMax_Complete_noise.csv')
-# df_monthly <- read.csv('/Users/nenbarsalo/Downloads/4_Reliability Project_DataNoise/Monthly_Cleaned_Dataset_MinMax_Complete_noise.csv')
-# 
-# # Log transformed
-# df_daily_log <- read.csv('/Users/nenbarsalo/Downloads/4_Reliability Project_DataNoise/Daily_Cleaned_Dataset_Log_MinMax_Complete_noise.csv')
-# df_weekly_log <- read.csv('/Users/nenbarsalo/Downloads/4_Reliability Project_DataNoise/Weekly_Cleaned_Dataset_Log_MinMax_Complete_noise.csv')
-# df_monthly_log <- read.csv('/Users/nenbarsalo/Downloads/4_Reliability Project_DataNoise/Monthly_Cleaned_Dataset_Log_MinMax_Complete_noise.csv')
-
-
-# Non-log transformed
-df_daily <- read.csv("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Daily_Cleaned_Dataset_MinMax_Complete.csv")
-df_weekly <- read.csv("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Weekly_Cleaned_Dataset_MinMax_Complete.csv")
-df_monthly <- read.csv("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Monthly_Cleaned_Dataset_MinMax_Complete.csv")
-
-# Log transformed
-df_daily_log <- read.csv("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Daily_Cleaned_Dataset_Log_MinMax_Complete.csv")
-df_weekly_log <- read.csv("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Weekly_Cleaned_Dataset_Log_MinMax_Complete.csv")
-df_monthly_log <- read.csv("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Monthly_Cleaned_Dataset_Log_MinMax_Complete.csv")
-
-# Define the items for each construct
-constructs_items <- list(
-  `Sleep Disturbance` = c('gm_sleep_duration', 'gm_sleep_duration_awake', 'gm_sleep_duration_deep', 'gm_sleep_duration_rem',  "sleep_duration"),
-  `Activity` = c('gm_dailies_step', 'step_count2', 'garmin_steps', 'act_still_ep_0', 'gm_dailies_active_kcal', 'gm_dailies_active_sec', 'gm_dailies_distance', 'gm_dailies_moderate_sec'),
-  `Affective Dysregulation` = c('garmin_hrv_mean_ep_0', 'gm_dailies_activity_stress_duration', 'gm_dailies_average_stress', 'garmin_stress_mean_ep_0', 'gm_dailies_high_stress_duration', 'gm_dailies_low_stress_duration', 'gm_dailies_max_stress', 'gm_dailies_medium_stress_duration'),
-  `Behavioral Inactivation` = c('unlock_duration_ep_0', 'unlock_num_ep_0', 'home_ep_0', 'loc_visit_num_ep_0', 'loc_dist_ep_0'),
-  `Social` = c('audio_convo_duration_ep_0', 'audio_convo_num_ep_0', 'call_in_duration_ep_0', 'call_in_num_ep_0', 'call_out_duration_ep_0', 'call_out_num_ep_0', 'sms_in_num_ep_0', 'sms_out_num_ep_0')
-)
-
-# Combine all items for the Depression construct
-constructs_items$`Depression` <- unique(unlist(constructs_items))
-
-# Define the datasets to loop through
-datasets <- list(
-  list(name = "Daily", df = df_daily, df_log = df_daily_log),
-  list(name = "Weekly", df = df_weekly, df_log = df_weekly_log),
-  list(name = "Monthly", df = df_monthly, df_log = df_monthly_log)
-)
-
-# Initialize empty data frame to store all results
-all_results_df <- data.frame(
-  Dataset = character(),
-  Construct = character(),
-  Harmonic_Mean = numeric(),
-  Metric = character(),
-  lavaan_est = numeric(),
-  misty_est = numeric(),
-  stringsAsFactors = FALSE
-)
-
-# Loop through each dataset
-for (dataset in datasets) {
-  print(dataset$name)
-  # Loop through non-log and log-transformed versions
-  for (is_log in c(FALSE, TRUE)) {
-    # Get the correct dataframe and dataset name
-    if (is_log) {
-      current_df <- dataset$df_log
-      dataset_name <- paste0(dataset$name, " (Log Transformed)")
-    } else {
-      current_df <- dataset$df
-      dataset_name <- paste0(dataset$name, " (Non-Log Transformed)")
-    }
-    
-    # Calculate the harmonic mean of cluster sizes
-    compliance_counts <- table(current_df$uid)
-    harmonic_mean <- length(compliance_counts) / sum(1 / compliance_counts)
-    
-    # Loop through each construct
-    for (construct_name in names(constructs_items)) {
-      items <- constructs_items[[construct_name]]
-      
-      model_string <- "
-level: 1
-  wf =~ NA*item_1_name + L1*item_1_name"
-      
-      if (length(items) > 1) {
-        for (i in 2:length(items)) {
-          model_string <- paste0(model_string, " + L", i, "*", items[i])
-        }
-      }
-      
-      model_string <- paste0(model_string, "
-  wf ~~ 1*wf
-")
-      
-      for (i in 1:length(items)) {
-        model_string <- paste0(model_string, "  ", items[i], " ~~ ew", i, " * ", items[i], "\n")
-      }
-      
-      model_string <- paste0(model_string, "
-level: 2
-  bf =~ NA*item_1_name + L1*item_1_name")
-      
-      if (length(items) > 1) {
-        for (i in 2:length(items)) {
-          model_string <- paste0(model_string, " + L", i, "*", items[i])
-        }
-      }
-      
-      model_string <- paste0(model_string, "
-  bf ~~ bfvar * bf
-")
-      
-      for (i in 1:length(items)) {
-        model_string <- paste0(model_string, "  ", items[i], " ~~ eb", i, " * ", items[i], "\n")
-      }
-      
-      sum_L <- paste0("(L1", paste(paste0(" + L", 2:length(items)), collapse = ""), ")^2")
-      sum_ew <- paste0("(ew1", paste(paste0(" + ew", 2:length(items)), collapse = ""), ")")
-      sum_eb <- paste0("(eb1", paste(paste0(" + eb", 2:length(items)), collapse = ""), ")")
-      
-      model_string <- paste0(model_string, "
-      
-# within-level omega (Geldhof, 2014; Lai 2021)
-tilomgw := ", sum_L, " *1 / (", sum_L, " + ", sum_ew, ")
-          
-# between-level 'tilde' omega (Geldhof, 2014), not used due to reliability issues, see Castro-Alvarez et al supplemental material (https://osf.io/kdn4g)
-tilomgb := ", sum_L, " * bfvar / (", sum_L, " * bfvar + ", sum_eb, ")
-
-# between-level omega (Lai, 2021)
-omgb := (", sum_L, " * bfvar) / ((", sum_L, " * (bfvar + 1 / ", harmonic_mean, ")) + ", sum_eb, " + ", sum_ew, " / ", harmonic_mean, ")
-omg2l := (", sum_L, " * (bfvar + 1)) / ((", sum_L, " * (bfvar + 1)) + ", sum_eb, " + ", sum_ew, ")
-")
-      
-      model_string <- gsub("item_1_name", items[1], model_string)
-      
-      # Fit the model and extract reliability estimates
-      mlcfa_full <- tryCatch({
-        cfa(model_string, data = current_df, cluster = "uid", orthogonal = TRUE,
-            estimator = "MLR", missing = "FIML", std.lv = TRUE)
-      }, error = function(e) {
-        warning(paste0("lavaan failed for ", construct_name, " in ", dataset_name, ": ", e$message))
-        return(NULL)
-      })
-      
-      if (!is.null(mlcfa_full)) {
-        cfa_est <- parameterEstimates(mlcfa_full)
-        ml_omega_cfa <- cfa_est$est[cfa_est$label %in% c("tilomgw", "tilomgb", "omgb", "omg2l")]
-      } else {
-        ml_omega_cfa <- c(NA, NA, NA, NA)
-      }
-      
-      # Use the misty package to get reliability estimates
-      mlcfa_misty <- tryCatch({
-        multilevel.omega(current_df[, items], cluster = current_df$uid, missing = "listwise")
-      }, error = function(e) {
-        warning(paste0("misty failed for ", construct_name, " in ", dataset_name, ": ", e$message))
-        return(NULL)
-      })
-      
-      if (!is.null(mlcfa_misty)) {
-        ml_omega_misty <- c(mlcfa_misty$result$omega$omega[1], NA, mlcfa_misty$result$omega$omega[2], mlcfa_misty$result$omega$omega[3])
-      } else {
-        ml_omega_misty <- c(NA, NA, NA, NA)
-      }
-      
-      print(mlcfa_misty)
-      print(dataset_name)
-      print(construct_name)
-      print(ml_omega_cfa)
-      print(ml_omega_misty)
-      
-      # Store the results in the main data frame
-      temp_df <- data.frame(
-        Dataset = rep(dataset_name,4),
-        Construct = rep(construct_name,4),
-        Harmonic_Mean = rep(harmonic_mean,4),
-        Metric = c("omega_w",NA, "omega_b", "omega_2l"),
-        lavaan_est = ml_omega_cfa,
-        misty_est = ml_omega_misty,
-        stringsAsFactors = FALSE
-      )
-      
-      
-      all_results_df <- rbind(all_results_df, temp_df)
-    }
-  }
-}
-
-print(all_results_df)
-
-all_results_df_copu = all_results_df
-
-write.csv(all_results_df,"all_results_rel.csv")
-multilevel.omega(data[, Activity], cluster = data$uid, missing = "listwise")
