@@ -197,7 +197,7 @@ for (i in 1:3) {
   if (length(subplots) > 0) {
     combined <- wrap_plots(subplots, ncol = 3,guides = "collect", axes = "collect") +
     plot_annotation(title = names(domains)[i]) &
-    theme(plot.title = element_text(face = "bold", size = 16))
+    theme(plot.title = element_text(face = "bold", size = 18))
     plots_by_domain[[names(domains)[i]]] <- combined
   }
 }
@@ -214,7 +214,7 @@ print(plots_by_domain)
 ## Internal Consistency using different Scalers (including all measures as preregistered)
 
 ### Standard Scaler, Log Transformed
-```{r Consistency1, echo=FALSE}
+```{r Consistency1, echo=FALSE, message=FALSE, warning=FALSE}
 
 
 scaler <- c("Log_Standard")
@@ -227,7 +227,7 @@ create_table(scaler, suffix)
 
 ### MinMax Scaler
 
-```{r Consistency2, echo=FALSE}
+```{r Consistency2, echo=FALSE, message=FALSE, warning=FALSE,}
 scaler <- c("MinMax")
 suffix <- c("main")
 
@@ -235,7 +235,7 @@ create_table(scaler, suffix)
 ```
 
 ### MinMax Scaler Log Transformed
-```{r Consistency3, echo=FALSE}
+```{r Consistency3, echo=FALSE, message=FALSE, warning=FALSE,}
 scaler <- c("Log_MinMax")
 suffix <- c("main")
 
@@ -244,7 +244,7 @@ create_table(scaler, suffix)
 
 ## Internal Consistency using different Scalers (improved version)
 ### Standard Scaler
-```{r Consistency4, echo=FALSE}
+```{r Consistency4, echo=FALSE,  message=FALSE, warning=FALSE,}
 
 scaler <- c("Standard")
 suffix <- c("imp")
@@ -255,7 +255,7 @@ create_table_imp(scaler, suffix)
 
 ### Standard Scaler, Log Transformed
 
-```{r Consistency5, echo=FALSE}
+```{r Consistency5, echo=FALSE,  message=FALSE, warning=FALSE,}
 
 scaler <- c("Log_Standard")
 suffix <- c("imp")
@@ -266,7 +266,7 @@ create_table_imp(scaler, suffix)
 
 ### MinMax Scaler
 
-```{r Consistency6, echo=FALSE}
+```{r Consistency6, echo=FALSE,  message=FALSE, warning=FALSE,}
 
 scaler <- c("MinMax")
 suffix <- c("imp")
@@ -277,7 +277,7 @@ create_table_imp(scaler, suffix)
 
 ### MinMax Scaler, Log Transformed
 
-```{r Consistency7, echo=FALSE}
+```{r Consistency7, echo=FALSE, message=FALSE, warning=FALSE,}
 
 scaler <- c("Log_MinMax")
 suffix <- c("imp")
