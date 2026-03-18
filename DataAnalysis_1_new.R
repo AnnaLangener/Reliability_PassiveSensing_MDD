@@ -3,6 +3,13 @@
 ######## Reliability Project Try Out #########
 ##############################################
 
+USE_NOISE <- TRUE  # set to FALSE to use the non-noise folder
+BASE_DIR <- if (USE_NOISE) {
+  "/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_DataNoise"
+} else {
+  "/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data"
+}
+
 library(lme4)
 library(ggplot2)
 library(dplyr)
@@ -20,9 +27,9 @@ length(unique(data_daily$uid))
 
 # ---- Correlation Analyses ----
 scaler = "Standard"
-data_daily <- read.csv(paste0("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Daily_Cleaned_Dataset_",scaler,"_Complete.csv"))
-data_weekly <- read.csv(paste0("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Weekly_Cleaned_Dataset_",scaler,"_Complete.csv"))
-data_monthly <- read.csv(paste0("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Monthly_Cleaned_Dataset_",scaler,"_Complete.csv"))
+data_daily <- read.csv(paste0(BASE_DIR, "/Daily_Cleaned_Dataset_", scaler, "_Complete.csv"))
+data_weekly <- read.csv(paste0(BASE_DIR, "/Weekly_Cleaned_Dataset_", scaler, "_Complete.csv"))
+data_monthly <- read.csv(paste0(BASE_DIR, "/Monthly_Cleaned_Dataset_", scaler, "_Complete.csv"))
 
 Sleep <- c('gm_sleep_duration', 'gm_sleep_duration_awake','gm_sleep_duration_deep', 'gm_sleep_duration_rem',"sleep_duration")
 Activity <- c('gm_dailies_step', 'step_count2',  'garmin_steps', 'act_still_ep_0', 'gm_dailies_active_kcal', 'gm_dailies_active_sec', 'gm_dailies_distance', 'gm_dailies_moderate_sec')
@@ -154,7 +161,7 @@ plan(multisession, workers = 12)  # adjust workers to your CPU cores
 # Function to run for each combination
 process_combo <- function(scaler, suffix) {
   # Read data
-  data_daily <- read.csv(paste0("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Daily_Cleaned_Dataset_", scaler, "_Complete.csv"))
+  data_daily <- read.csv(paste0(BASE_DIR, "/Daily_Cleaned_Dataset_", scaler, "_Complete.csv"))
   
   # Define variable groups
   if(suffix == "main"){
@@ -206,7 +213,7 @@ results <- future_mapply(
 
 for(scaler in c("Standard", "Log_Standard", "MinMax", "Log_MinMax")){
   for(suffix in c("main", "imp")){
-  data_daily <- read.csv(paste0("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Daily_Cleaned_Dataset_",scaler,"_Complete.csv"))
+  data_daily <- read.csv(paste0(BASE_DIR, "/Daily_Cleaned_Dataset_", scaler, "_Complete.csv"))
   
   if(suffix == "main"){
     Sleep <- c('gm_sleep_duration', 'gm_sleep_duration_awake','gm_sleep_duration_deep', 'gm_sleep_duration_rem',"sleep_duration")
@@ -247,7 +254,7 @@ for(scaler in c("Standard", "Log_Standard", "MinMax", "Log_MinMax")){
   for(suffix in c("main", "imp")){
     
     print(paste(scaler, suffix))
-    data_weekly <- read.csv(paste0("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Weekly_Cleaned_Dataset_",scaler,"_Complete.csv"))
+    data_weekly <- read.csv(paste0(BASE_DIR, "/Weekly_Cleaned_Dataset_", scaler, "_Complete.csv"))
     
     if(suffix == "main"){
       Sleep <- c('gm_sleep_duration', 'gm_sleep_duration_awake','gm_sleep_duration_deep', 'gm_sleep_duration_rem',"sleep_duration")
@@ -288,7 +295,7 @@ for(scaler in c("Standard", "Log_Standard", "MinMax", "Log_MinMax")){
     
     print(paste(scaler, suffix))
     
-    data_monthly <- read.csv(paste0("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Monthly_Cleaned_Dataset_",scaler,"_Complete.csv"))
+    data_monthly <- read.csv(paste0(BASE_DIR, "/Monthly_Cleaned_Dataset_", scaler, "_Complete.csv"))
     
     if(suffix == "main"){
       Sleep <- c('gm_sleep_duration', 'gm_sleep_duration_awake','gm_sleep_duration_deep', 'gm_sleep_duration_rem',"sleep_duration")
@@ -331,9 +338,9 @@ for(scaler in c("Standard", "Log_Standard", "MinMax", "Log_MinMax")){
 scaler = "Standard"
 suffix = "imp"
 
-data_daily <- read.csv(paste0("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Daily_Cleaned_Dataset_",scaler,"_Complete.csv"))
-data_weekly <- read.csv(paste0("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Weekly_Cleaned_Dataset_",scaler,"_Complete.csv"))
-data_monthly <- read.csv(paste0("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Monthly_Cleaned_Dataset_",scaler,"_Complete.csv"))
+data_daily <- read.csv(paste0(BASE_DIR, "/Daily_Cleaned_Dataset_", scaler, "_Complete.csv"))
+data_weekly <- read.csv(paste0(BASE_DIR, "/Weekly_Cleaned_Dataset_", scaler, "_Complete.csv"))
+data_monthly <- read.csv(paste0(BASE_DIR, "/Monthly_Cleaned_Dataset_", scaler, "_Complete.csv"))
 
 
 if(suffix == "main"){
@@ -354,7 +361,7 @@ if(suffix == "imp"){
   Social <- c('audio_convo_duration_ep_0', 'audio_convo_num_ep_0','call_in_duration_ep_0', 'call_in_num_ep_0', 'call_out_duration_ep_0', 'call_out_num_ep_0', 'sms_in_num_ep_0', 'sms_out_num_ep_0')
 }
 
-setwd("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Results")
+setwd(paste0(BASE_DIR, "/Results"))
 
 timescale = "Daily"
 Sleep_Nez_d <- GeneralizabilityTheory_Nezlek(data_daily,Sleep,"day","uid") #0.93, 0 # singular
@@ -402,9 +409,9 @@ saveRDS(Social_Nez_m, paste0(timescale, "_Nez_Social_", scaler, "_", suffix, ".r
 scaler = "MinMax"
 suffix = "main"
 
-data_daily <- read.csv(paste0("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Daily_Cleaned_Dataset_",scaler,"_Complete.csv"))
-data_weekly <- read.csv(paste0("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Weekly_Cleaned_Dataset_",scaler,"_Complete.csv"))
-data_monthly <- read.csv(paste0("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Monthly_Cleaned_Dataset_",scaler,"_Complete.csv"))
+data_daily <- read.csv(paste0(BASE_DIR, "/Daily_Cleaned_Dataset_", scaler, "_Complete.csv"))
+data_weekly <- read.csv(paste0(BASE_DIR, "/Weekly_Cleaned_Dataset_", scaler, "_Complete.csv"))
+data_monthly <- read.csv(paste0(BASE_DIR, "/Monthly_Cleaned_Dataset_", scaler, "_Complete.csv"))
 
 
 if(suffix == "main"){
@@ -471,7 +478,7 @@ saveRDS(Social_omega_month, paste0(timescale, "_multi_Social_", scaler, "_", suf
 
 
 ##### Load results:
-setwd("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Results")
+setwd(paste0(BASE_DIR, "/Results"))
 
 # log
 # Standard_main, Log_Standard_main, MinMax_main, Log_MinMax_main
@@ -482,7 +489,7 @@ suffix <- c("main")
 
 create_table(scaler, suffix)
 
-setwd("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Results")
+setwd(paste0(BASE_DIR, "/Results"))
   
 suffixes   <- c("_d", "_w", "_m")
 prefixes <- c("Daily", "Weekly", "Monthly")
@@ -677,7 +684,7 @@ run_test_retest <- function(data_path, constructs, time_var, id_var = "uid", lab
 
 
 #### Daily ####
-daily_path <- "/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Daily_Cleaned_Dataset_Standard_Complete.csv"
+daily_path <- paste0(BASE_DIR, "/Daily_Cleaned_Dataset_Standard_Complete.csv")
 
 sleep_day <- run_test_retest(daily_path, Sleep, "day", "uid", "Sleep_Score")
 activity_day <- run_test_retest(daily_path, Activity, "day", "uid", "Activity_Score")
@@ -686,7 +693,7 @@ behavioralinactivation_day <- run_test_retest(daily_path, BehavioralInactivation
 social_day <- run_test_retest(daily_path, Social, "day", "uid", "SocialWithdrawal_Score")
 
 ###### Weekly #####
-weekly_path <- "/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Weekly_Cleaned_Dataset_Standard_Complete.csv"
+weekly_path <- paste0(BASE_DIR, "/Weekly_Cleaned_Dataset_Standard_Complete.csv")
 
 sleep_week <- run_test_retest(weekly_path, Sleep, "week_num", "uid", "Sleep_Score")
 activity_week <- run_test_retest(weekly_path, Activity, "week_num", "uid", "Activity_Score")
@@ -695,7 +702,7 @@ behavioralinactivation_week <- run_test_retest(weekly_path, BehavioralInactivati
 social_week <- run_test_retest(weekly_path, Social, "week_num", "uid", "SocialWithdrawal_Score")
 
 ### Monthly #####
-monthly_path <- "/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Monthly_Cleaned_Dataset_Standard_Complete.csv"
+monthly_path <- paste0(BASE_DIR, "/Monthly_Cleaned_Dataset_Standard_Complete.csv")
 
 sleep_month <- run_test_retest(monthly_path, Sleep, "month_num", "uid", "Sleep_Score")
 activity_month <- run_test_retest(monthly_path, Activity, "month_num", "uid", "Activity_Score")
@@ -804,6 +811,58 @@ results_df <- results_df %>%
   ) %>%
   ungroup()
 
+
+pretty_names <- c(
+  ## --- Sleep ---
+  gm_sleep_duration = "Sleep Duration (Garmin)",
+  gm_sleep_duration_awake = "Awake Time During Sleep (Garmin)",
+  gm_sleep_duration_deep = "Deep Sleep Duration (Garmin)",
+  gm_sleep_duration_rem = "REM Sleep Duration (Garmin)",
+  sleep_duration = "Sleep Duration (Phone)",
+  
+  ## --- Activity ---
+  gm_dailies_step = "Step Count 1 (Garmin)",
+  step_count2 = "Step Count (Phone)",
+  garmin_steps = "Step Count 2 (Garmin)",
+  act_still_ep_0 = "Sedentary Time (Phone)",
+  gm_dailies_active_kcal = "Active Calories Burned (Garmin)",
+  gm_dailies_active_sec = "Active Time (Garmin)",
+  gm_dailies_distance = "Distance Traveled (Garmin)",
+  gm_dailies_moderate_sec = "Moderate Activity Time (Garmin)",
+  
+  ## --- Affective Dysregulation ---
+  garmin_hrv_mean_ep_0 = "Mean Heart Rate Variability (Garmin)",
+  gm_dailies_activity_stress_duration = "Activity-Related Stress Duration (Garmin)",
+  gm_dailies_average_stress = "Average Stress Level 1 (Garmin)",
+  garmin_stress_mean_ep_0 = "Average Stress Level 2 (Garmin)",
+  gm_dailies_high_stress_duration = "High Stress Duration (Garmin)",
+  gm_dailies_low_stress_duration = "Low Stress Duration (Garmin)",
+  gm_dailies_max_stress = "Maximum Stress Level (Garmin)",
+  gm_dailies_medium_stress_duration = "Moderate Stress Duration (Garmin)",
+  
+  ## --- Behavioral Inactivation ---
+  unlock_duration_ep_0 = "Phone Unlock Duration (Phone)",
+  unlock_num_ep_0 = "Phone Unlock Frequency (Phone)",
+  home_ep_0 = "Time Spent at Home (Phone)",
+  loc_visit_num_ep_0 = "Number of Location Visits (Phone)",
+  loc_dist_ep_0 = "Distance Traveled (Phone)",
+  
+  ## --- Social ---
+  audio_convo_duration_ep_0 = "Conversation Duration (Phone)",
+  audio_convo_num_ep_0 = "Conversation Frequency (Phone)",
+  call_in_duration_ep_0 = "Incoming Call Duration (Phone)",
+  call_in_num_ep_0 = "Incoming Call Frequency (Phone)",
+  call_out_duration_ep_0 = "Outgoing Call Duration (Phone)",
+  call_out_num_ep_0 = "Outgoing Call Frequency (Phone)",
+  sms_in_num_ep_0 = "Incoming SMS Count (Phone)",
+  sms_out_num_ep_0 = "Outgoing SMS Count (Phone)"
+)
+
+results_df <- long_data %>%
+  mutate(variable = recode(Variable, !!!pretty_names))
+
+
+
 my_timeframe_colors <- c(
   "Daily" = "#1b9e77",     # teal green
   "Weekly" = "#d95f02",    # orange
@@ -829,7 +888,7 @@ plot = ggplot(results_df, aes(y = Variable, x = V1, color = Timeframe)) +
     color = ""
     #shape = ""                
   ) +
-  scale_color_manual(values = my_timeframe_colors) +  
+  scale_color_manual(values = my_timeframe_colors,  breaks = c("Daily", "Weekly", "Monthly")) +  
   #scale_shape_manual(values = c("Item" = 16, "Overall Score" = 17)) +
   theme_ipsum(base_size = 12) +
   theme(
@@ -837,10 +896,11 @@ plot = ggplot(results_df, aes(y = Variable, x = V1, color = Timeframe)) +
     strip.text = element_text(face = "bold", size = 12),
     axis.text.y = element_text(size = 12),
     panel.spacing = unit(0.5, "lines")
-  ) 
+  ) +
+  scale_y_discrete(labels = pretty_names)
 
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
-ggsave("testretestnew.jpg", plot = plot, width = 9, height = 10)
+ggsave("Figures/testretestnew.jpg", plot = plot, width = 10, height = 10)
 
 
 #------------------------------------------
@@ -853,7 +913,7 @@ library(irr)
 # Stress: gm_dailies_average_stress, garmin_stress_mean_ep_0
 
 # summarized raw sensor data will be used
-data <- read.csv("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Daily_Cleaned_Dataset.csv")
+data <- read.csv(paste0(BASE_DIR, "/Daily_Cleaned_Dataset.csv"))
 
 icc_steps <- irr::icc(data[,c("step_count2","gm_dailies_step","garmin_steps")], model = "twoway", type = "agreement", unit = "single")$value
 icc_sleep <- irr::icc(data[,c("gm_sleep_duration","sleep_duration")], model = "twoway", type = "agreement", unit = "single")$value
@@ -868,6 +928,7 @@ long_data <- data %>%
     values_to = "score"
   ) %>%
   rename(subject = uid)  
+
 
 model <- lmer(score ~ (1 | subject) + (1 | rater), data = long_data)
 
@@ -935,8 +996,28 @@ plot_heatmap <- function(df, title) {
     theme(axis.text.x = element_text(angle = 45, hjust = 1),
           axis.text.y = element_text(hjust = 1),
           plot.title = element_text(face = "bold", size = 14),
-          legend.position = "none")  # removes the legend
+          legend.position = "none") +
+    scale_y_discrete(labels = pretty_names) +
+    scale_x_discrete(labels = pretty_names)
 }
+
+melt_steps <- melt_steps %>%
+  mutate(Var1 = recode(Var1, !!!pretty_names))
+
+melt_steps <- melt_steps %>%
+  mutate(Var2 = recode(Var2, !!!pretty_names))
+
+melt_sleep <- melt_sleep %>%
+  mutate(Var1 = recode(Var1, !!!pretty_names))
+
+melt_sleep <- melt_sleep %>%
+  mutate(Var2 = recode(Var2, !!!pretty_names))
+
+melt_stress <- melt_stress %>%
+  mutate(Var1 = recode(Var1, !!!pretty_names))
+
+melt_stress <- melt_stress %>%
+  mutate(Var2 = recode(Var2, !!!pretty_names))
 
 # ---- Step 3: Create heatmaps ----
 p_steps <- plot_heatmap(melt_steps, "Steps")
@@ -969,4 +1050,4 @@ plot_stress <- arrangeGrob(p_stress, table_stress, ncol = 1, heights = c(3,1))
 # ---- Step 6: Arrange all three side by side ----
 plot = grid.arrange(plot_steps, plot_stress, ncol = 2)
 
-ggsave("interrater.jpg", plot = plot, width = 11, height = 5)
+ggsave("Figures/interrater.jpg", plot = plot, width = 11, height = 5)

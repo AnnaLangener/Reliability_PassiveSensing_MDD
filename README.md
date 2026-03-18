@@ -4,6 +4,9 @@ This repository contains the supplementary material and all code used for the ma
 
 ## Repository Structure
 
+### 0. Creating Synthetic Data
+- We used `Create Synthetic Data.R` to create the complete_feat_dataset.csv which contains synthetic data generated with the synthpop package.
+
 ### 1. Data Cleaning Scripts  
 Used to clean and scale the data.
 

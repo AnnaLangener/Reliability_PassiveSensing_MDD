@@ -1,0 +1,311 @@
+---
+title: "Overview Features"
+output: html_document
+date: "2025-04-14"
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+library(tidyr)
+library(ggplot2)
+library(dplyr)
+library(psych)
+library(hrbrthemes)
+knitr::opts_chunk$set(echo = TRUE)
+setwd("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data")
+data = read.csv("complete_feat_dataset.csv")[-1]
+data_log <- read.csv("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Weekly_Cleaned_Dataset_Log_Standard_Complete.csv")
+
+
+data_standard =read.csv("/Users/f007qrc/Library/CloudStorage/GoogleDrive-anna.m.langener@dartmouth.edu/My Drive/Darmouth Drive/4_Reliability Project_Data/Weekly_Cleaned_Dataset_Standard_Complete.csv")
+
+
+# Add random noise
+# Columns to exclude from adding noise
+exclude_cols <- c("X_id", "day", "uid")
+
+# Columns to add noise to
+cols_to_noise <- setdiff(names(data), exclude_cols)
+
+# Add random noise (e.g., normal noise with mean=0, sd=0.1) to selected columns
+data[cols_to_noise] <- lapply(data[cols_to_noise], function(x) {
+  if (is.numeric(x)) {
+    x + rnorm(length(x), mean = 0, sd = 0.9)
+  } else {
+    x  # leave non-numeric columns unchanged
+  }
+})
+
+inject_zeros <- function(x, zero_prob = 0.3) {
+  is_zero <- runif(length(x)) < zero_prob
+  x[is_zero] <- 0
+  return(x)
+}
+
+for (var in cols_to_noise) {
+  data[[var]] <- inject_zeros(data[[var]], zero_prob = 0.1)
+}
+
+
+write.csv(data, "complete_feat_dataset_noise.csv")
+
+```
+
+# Reliability Project - Data Overview
+
+## Overview of variables with a large amount of missing values 
+
+```{r}
+overview <- describe(data_standard)
+print(rownames(overview[overview$n < 17754,])) # less than 50%
+
+
+#data = data[,!colnames(data) %in% rownames(overview[overview$n < 20000,])]
+
+
+Sleep <- c('gm_sleep_duration', 'gm_sleep_duration_awake','gm_sleep_duration_deep', 'gm_sleep_duration_rem',"sleep_duration")
+Activity <- c('gm_dailies_step', 'step_count2',  'garmin_steps', 'act_still_ep_0', 'gm_dailies_active_kcal', 'gm_dailies_active_sec', 'gm_dailies_distance', 'gm_dailies_moderate_sec')
+AffectiveDysregulation <- c ('garmin_hrv_mean_ep_0', 'gm_dailies_activity_stress_duration','gm_dailies_average_stress', 'garmin_stress_mean_ep_0','gm_dailies_high_stress_duration', 'gm_dailies_low_stress_duration','gm_dailies_max_stress', 'gm_dailies_medium_stress_duration')
+BehavioralInactivation <- c('unlock_duration_ep_0', 'unlock_num_ep_0', 'home_ep_0', 'loc_visit_num_ep_0', 'loc_dist_ep_0')
+Social <- c('audio_convo_duration_ep_0', 'audio_convo_num_ep_0','call_in_duration_ep_0', 'call_in_num_ep_0', 'call_out_duration_ep_0', 'call_out_num_ep_0', 'sms_in_num_ep_0', 'sms_out_num_ep_0')
+
+```
+
+
+## Overview of variables 
+### Vairables available multiple times a day
+```{r}
+describe(subset)
+```
+### Sleep Variables
+```{r}
+describe(subset_sleep)
+```
+
+### Daily Variables
+
+```{r}
+describe(subset_daily)
+```
+
+### All Variables
+
+```{r}
+describe(data)
+```
+
+## Viz of Data
+### Vairables available multiple times a day
+```{r}
+subset <- data_standard[,colnames(data_standard) %in% AffectiveDysregulation]
+
+subset <- data[,colnames(data) %in% AffectiveDysregulation]
+subset <- data_log[,colnames(data_log) %in% AffectiveDysregulation]
+
+
+###
+subset <- data_standard[,colnames(data_standard) %in% Sleep]
+
+
+
+Sleep <- c('gm_sleep_duration', 'gm_sleep_duration_awake','gm_sleep_duration_deep', 'gm_sleep_duration_rem',"sleep_duration")
+Activity <- c('gm_dailies_step', 'step_count2',  'garmin_steps', 'act_still_ep_0', 'gm_dailies_active_kcal', 'gm_dailies_active_sec', 'gm_dailies_distance', 'gm_dailies_moderate_sec')
+AffectiveDysregulation <- c ('garmin_hrv_mean_ep_0', 'gm_dailies_activity_stress_duration','gm_dailies_average_stress', 'garmin_stress_mean_ep_0','gm_dailies_high_stress_duration', 'gm_dailies_low_stress_duration','gm_dailies_max_stress', 'gm_dailies_medium_stress_duration')
+BehavioralInactivation <- c('unlock_duration_ep_0', 'unlock_num_ep_0', 'home_ep_0', 'loc_visit_num_ep_0', 'loc_dist_ep_0')
+Social <- c('audio_convo_duration_ep_0', 'audio_convo_num_ep_0','call_in_duration_ep_0', 'call_in_num_ep_0', 'call_out_duration_ep_0', 'call_out_num_ep_0', 'sms_in_num_ep_0', 'sms_out_num_ep_0')
+
+long_subset <- pivot_longer(
+  subset,
+  cols = everything(),
+  names_to = "variable",
+  values_to = "values"
+)
+
+ggplot(long_subset, aes (x = values)) +
+      geom_histogram(aes(y = ..density..), alpha = 0.7, fill = "#333333") + 
+      geom_density(alpha = 0.5) +
+      facet_wrap(vars(variable), scales = "free")+
+  theme_ipsum()
+
+
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(hrbrthemes) # for theme_ipsum
+
+# Define constructs
+constructs <- list(
+  Sleep = c('gm_sleep_duration', 'gm_sleep_duration_awake','gm_sleep_duration_deep', 'gm_sleep_duration_rem',"sleep_duration"),
+  Activity = c('gm_dailies_step', 'step_count2',  'garmin_steps', 'act_still_ep_0', 'gm_dailies_active_kcal', 'gm_dailies_active_sec', 'gm_dailies_distance', 'gm_dailies_moderate_sec'),
+  AffectiveDysregulation = c('garmin_hrv_mean_ep_0', 'gm_dailies_activity_stress_duration','gm_dailies_average_stress', 'garmin_stress_mean_ep_0','gm_dailies_high_stress_duration', 'gm_dailies_low_stress_duration','gm_dailies_max_stress', 'gm_dailies_medium_stress_duration'),
+  BehavioralInactivation = c('unlock_duration_ep_0', 'unlock_num_ep_0', 'home_ep_0', 'loc_visit_num_ep_0', 'loc_dist_ep_0'),
+  Social = c('audio_convo_duration_ep_0', 'audio_convo_num_ep_0','call_in_duration_ep_0', 'call_in_num_ep_0', 'call_out_duration_ep_0', 'call_out_num_ep_0', 'sms_in_num_ep_0', 'sms_out_num_ep_0')
+)
+
+# Combine all variables into one long dataframe with construct column
+long_data <- bind_rows(
+  lapply(names(constructs), function(cons) {
+    subset <- data_standard[, colnames(data_standard) %in% constructs[[cons]], drop = FALSE]
+    long <- pivot_longer(subset, cols = everything(), names_to = "variable", values_to = "values")
+    long$construct <- cons
+    long
+  })
+)
+library(ggridges)
+
+pretty_names <- c(
+  ## --- Sleep ---
+  gm_sleep_duration = "Sleep Duration (Garmin)",
+  gm_sleep_duration_awake = "Awake Time During Sleep (Garmin)",
+  gm_sleep_duration_deep = "Deep Sleep Duration (Garmin)",
+  gm_sleep_duration_rem = "REM Sleep Duration (Garmin)",
+  sleep_duration = "Sleep Duration (Phone)",
+
+  ## --- Activity ---
+  gm_dailies_step = "Step Count 1 (Garmin)",
+  step_count2 = "Step Count (Phone)",
+  garmin_steps = "Step Count 2 (Garmin)",
+  act_still_ep_0 = "Sedentary Time (Phone)",
+  gm_dailies_active_kcal = "Active Calories Burned (Garmin)",
+  gm_dailies_active_sec = "Active Time (Garmin)",
+  gm_dailies_distance = "Distance Traveled (Garmin)",
+  gm_dailies_moderate_sec = "Moderate Activity Time (Garmin)",
+
+  ## --- Affective Dysregulation ---
+  garmin_hrv_mean_ep_0 = "Mean Heart Rate Variability (Garmin)",
+  gm_dailies_activity_stress_duration = "Activity-Related Stress Duration (Garmin)",
+  gm_dailies_average_stress = "Average Stress Level 1 (Garmin)",
+  garmin_stress_mean_ep_0 = "Average Stress Level 2 (Garmin)",
+  gm_dailies_high_stress_duration = "High Stress Duration (Garmin)",
+  gm_dailies_low_stress_duration = "Low Stress Duration (Garmin)",
+  gm_dailies_max_stress = "Maximum Stress Level (Garmin)",
+  gm_dailies_medium_stress_duration = "Moderate Stress Duration (Garmin)",
+
+  ## --- Behavioral Inactivation ---
+  unlock_duration_ep_0 = "Phone Unlock Duration (Phone)",
+  unlock_num_ep_0 = "Phone Unlock Frequency (Phone)",
+  home_ep_0 = "Time Spent at Home (Phone)",
+  loc_visit_num_ep_0 = "Number of Location Visits (Phone)",
+  loc_dist_ep_0 = "Distance Traveled (Phone)",
+
+  ## --- Social ---
+  audio_convo_duration_ep_0 = "Conversation Duration (Phone)",
+  audio_convo_num_ep_0 = "Conversation Frequency (Phone)",
+  call_in_duration_ep_0 = "Incoming Call Duration (Phone)",
+  call_in_num_ep_0 = "Incoming Call Frequency (Phone)",
+  call_out_duration_ep_0 = "Outgoing Call Duration (Phone)",
+  call_out_num_ep_0 = "Outgoing Call Frequency (Phone)",
+  sms_in_num_ep_0 = "Incoming SMS Count (Phone)",
+  sms_out_num_ep_0 = "Outgoing SMS Count (Phone)"
+)
+
+long_data <- long_data %>%
+  mutate(variable = recode(variable, !!!pretty_names))
+
+p =ggplot(long_data, aes(x = values, y = variable, fill = ..x..)) +
+  geom_density_ridges_gradient(
+    scale = 3, 
+    rel_min_height = 0.01,
+    color = "#1b9e77"
+  ) +
+  scale_fill_gradient(
+    low = "#1b9e7733",   # add transparency via hex suffix (33 = ~20% opacity)
+    high = "#1b9e77AA"   # high values slightly more opaque (AA = ~66% opacity)
+  ) +
+  facet_wrap(~construct, scales = "free",ncol = 1) +
+  theme_ipsum() +
+  theme(
+    legend.position = "none",
+    panel.spacing = unit(0.1, "lines"),
+    strip.text.x = element_text(size = 12)
+  ) +
+  scale_y_discrete(labels = pretty_names)
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+
+ggsave(
+  filename = "Figures/Des.png", # file name
+  plot = p,                              # the plot object
+  width = 8,                            # width in inches
+  height = 10.5,                            # height in inches
+  dpi = 300                              # resolution
+)
+
+```
+
+```{r}
+subset <- data[,colnames(data) %in% Activity]
+subset <- data_log[,colnames(data_log) %in% Activity]
+
+###
+long_subset <- pivot_longer(
+  subset,
+  cols = everything(),
+  names_to = "variable",
+  values_to = "values"
+)
+
+ggplot(long_subset, aes (x = values)) +
+      geom_histogram(aes(y = ..density..), alpha = 0.7, fill = "#333333") + 
+      geom_density(alpha = 0.5) +
+      facet_wrap(vars(variable), scales = "free")+
+  theme_ipsum()
+```
+
+
+```{r}
+subset <- data[,colnames(data) %in% AffectiveDysregulation]
+###
+long_subset <- pivot_longer(
+  subset,
+  cols = everything(),
+  names_to = "variable",
+  values_to = "values"
+)
+
+ggplot(long_subset, aes (x = values)) +
+      geom_histogram(aes(y = ..density..), alpha = 0.7, fill = "#333333") + 
+      geom_density(alpha = 0.5) +
+      facet_wrap(vars(variable), scales = "free") +
+  theme_ipsum()
+
+
+```
+
+
+```{r}
+subset <- data[,colnames(data) %in% BehavioralInactivation]
+###
+long_subset <- pivot_longer(
+  subset,
+  cols = everything(),
+  names_to = "variable",
+  values_to = "values"
+)
+
+ggplot(long_subset, aes (x = values)) +
+      geom_histogram(aes(y = ..density..), alpha = 0.7, fill = "#333333") + 
+      geom_density(alpha = 0.5) +
+      facet_wrap(vars(variable), scales = "free") +
+  theme_ipsum()
+
+
+```
+
+### Daily Variables
+```{r}
+ 
+long_daily <- subset_daily %>%
+  mutate(across(everything(), as.numeric)) %>%
+  pivot_longer(
+  cols = everything(),
+  names_to = "variable",
+  values_to = "values"
+)
+
+
+ggplot(long_daily, aes (x = values)) +
+      geom_histogram(aes(y = ..density..), alpha = 0.7, fill = "#333333") + 
+      geom_density(alpha = 0.5) +
+      facet_wrap(vars(variable), scales = "free")
+```
