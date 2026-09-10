@@ -46,7 +46,7 @@ df$day <- as.POSIXct(df$day, format = "%Y-%m-%d", tz = "UTC")
 
 syn_complete_data <- syn(df, maxfaclevels = 100)
 
-syn_complete_data$syn
 
-write.csv(syn_complete_data$syn,"complete_feat_dataset.csv")
+write.csv(syn_complete_data$syn,"Synthetic Data/complete_feat_dataset.csv")
 
+data <- syn_complete_data$syn
